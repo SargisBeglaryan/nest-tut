@@ -27,6 +27,13 @@ export class UserService {
     return dto;
   }
 
+  async publicUser(email: string) {
+    return this.userRepository.findOne({
+      where: {email},
+      attributes: {exclude: ['password']}
+    })
+  }
+
 
   async getUsers(): Promise<object> {
     return await this.userRepository.findAll();
