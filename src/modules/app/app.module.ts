@@ -5,10 +5,11 @@ import { UserModule } from '../user/user.module';
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import configurations from "../../configurations";
 import { User } from "../user/models/user.model";
-import {TypeOrmModule} from "@nestjs/typeorm";
 import {SequelizeModule} from "@nestjs/sequelize";
 import { AuthModule } from "../auth/auth.module";
 import { TokenModule } from "../token/token.module";
+import { WatchlistModule } from "../watchlist/watchlist.module";
+import { Watchlist } from "../watchlist/models/watchlist.model";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -27,12 +28,13 @@ import { TokenModule } from "../token/token.module";
         password: configService.get('db_password'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User],
+        models: [User, Watchlist],
       })
     }),
     UserModule,
     AuthModule,
-    TokenModule],
+    TokenModule,
+    WatchlistModule],
   controllers: [AppController],
   providers: [AppService],
   exports: [],

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDTO, DeleteUserDto, UpdateUserDto } from "./dto";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { isBoolean } from "class-validator";
+import { Watchlist } from "../watchlist/models/watchlist.model";
 
 @Injectable()
 export class UserService {
@@ -32,7 +33,11 @@ export class UserService {
   async publicUser(email: string) {
     return this.userRepository.findOne({
       where: {email},
-      attributes: {exclude: ['password']}
+      attributes: {exclude: ['password']},
+      include: {
+        model: Watchlist,
+        required: false
+      }
     })
   }
 
@@ -45,7 +50,7 @@ export class UserService {
 
   @ApiTags("API")
   @ApiResponse({status: 200, type: isBoolean})
-  async deleteUser(email:string) {
+  async deleteUser(email:string): Promise<boolean> {
     await this.userRepository.destroy({where: {email}});
     return true;
   }
