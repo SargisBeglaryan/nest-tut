@@ -12,11 +12,15 @@ export class UserService {
   constructor(@InjectModel(User) private readonly userRepository: typeof User) {
   }
 
-  async hashPassword(password) {
-    return bcrypt.hash(password, 10);
+  async hashPassword(password: string): Promise<string> {
+    try {
+      return bcrypt.hash(password, 10);
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  async findUserByEmail(email: string) {
+  async findUserByEmail(email: string): Promise<User> {
     return this.userRepository.findOne({where: {email}})
   }
   async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
@@ -30,7 +34,7 @@ export class UserService {
     return dto;
   }
 
-  async publicUser(email: string) {
+  async publicUser(email: string): Promise<User> {
     return this.userRepository.findOne({
       where: {email},
       attributes: {exclude: ['password']},
@@ -43,7 +47,7 @@ export class UserService {
 
   @ApiTags("API")
   @ApiResponse({status: 200, type: UpdateUserDto})
-  async updateUser(email:string, dto:UpdateUserDto) {
+  async updateUser(email:string, dto:UpdateUserDto): Promise<UpdateUserDto> {
     await this.userRepository.update(dto, {where: {email}});
     return dto;
   }
@@ -57,6 +61,12 @@ export class UserService {
 
 
   async getUsers(): Promise<object> {
-    return await this.userRepository.findAll();
+    return await this.userRepository.findAll({
+      attributes: {exclude: ['password']},
+      include: {
+        model: Watchlist,
+        required: false
+      }
+    });
   }
 }
