@@ -8,4 +8,5 @@ export class UserLoginDto {
   @ApiProperty()
   @IsString()
   password: string;
+
 }
